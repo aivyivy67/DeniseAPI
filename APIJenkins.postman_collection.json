@@ -1,0 +1,165 @@
+{
+	"info": {
+		"_postman_id": "6f198e34-bfb2-4ce3-add0-7a4d8da52da6",
+		"name": "APIJenkins",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "36905258"
+	},
+	"item": [
+		{
+			"name": "sign-in - [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify user role = TEACHER\", function () { \r",
+							"    pm.expect(jsonData.user.role).to.eql(\"TEACHER\");\r",
+							"});\r",
+							"pm.environment.set(\"teacherToken\", jsonData.token);\r",
+							"pm.environment.set(\"teacherID\", jsonData.user.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"balderrama@thaitudang.xyz\",\r\n  \"password\": \"thaitu567\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseURL}}/sign-in"
+			},
+			"response": []
+		},
+		{
+			"name": "quiz -[T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"quizID\", jsonData.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{teacherToken}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Denise's Quiz 11/04/24\",\r\n    \"totalScore\": 18,\r\n    \"passingPercentage\": 75,\r\n    \"showStopperQuestion\": 1,\r\n    \"questions\": [\r\n        {\r\n            \"type\": \"TEXTUAL\",\r\n            \"question\": \"What is your name?\",\r\n            \"score\": 5\r\n        },\r\n        {\r\n            \"type\": \"SINGLE_CHOICE\",\r\n            \"question\": \"Which city is city largest in California?\",\r\n            \"score\": 7,\r\n            \"answer\": 2,\r\n            \"hasOtherOption\": false,\r\n            \"options\": [\r\n                \"San Francisco\",\r\n                \"Sacramento\",\r\n                \"Los Angeles\",\r\n                \"Redding\"\r\n            ]\r\n        },\r\n        {\r\n            \"type\": \"MULTIPLE_CHOICE\",\r\n            \"question\": \"Who was apple founded by?\",\r\n            \"score\": 6,\r\n            \"answers\": [\r\n                0,\r\n                1,\r\n                2\r\n            ],\r\n            \"hasOtherOption\": true,\r\n            \"options\": [\r\n                \"Steve Jobs\",\r\n                \"Steve Wozniak\",\r\n                \"Ronald Wayne\",\r\n                \"Ronald Reagan\"\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseURL}}/quiz"
+			},
+			"response": []
+		},
+		{
+			"name": "quiz [T]",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{teacherToken}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Denise's Quiz 11/04/24 UPDATED\",\r\n  \"totalScore\": 18,\r\n  \"passingPercentage\": 75,\r\n  \"showStopperQuestion\": 1,\r\n  \"questions\": [\r\n    {\r\n      \"type\": \"TEXTUAL\",\r\n      \"question\": \"What is your name?\",\r\n      \"score\": 5\r\n    },\r\n    {\r\n      \"type\": \"SINGLE_CHOICE\",\r\n      \"question\": \"Which city is city largest in California?\",\r\n      \"score\": 7,\r\n      \"answer\": 2,\r\n      \"hasOtherOption\": false,\r\n      \"options\": [\r\n        \"San Francisco\",\r\n        \"Sacramento\",\r\n        \"Los Angeles\",\r\n        \"Redding\"\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"MULTIPLE_CHOICE\",\r\n      \"question\": \"Who was apple founded by?\",\r\n      \"score\": 6,\r\n      \"answers\": [\r\n        0,\r\n        1,\r\n        2\r\n      ],\r\n      \"hasOtherOption\": true,\r\n      \"options\": [\r\n        \"Steve Jobs\",\r\n        \"Steve Wozniak\",\r\n        \"Ronald Wayne\",\r\n        \"Ronald Reagan\"\r\n      ]\r\n    }\r\n  ],\r\n  \"id\": {{quizID}}\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseURL}}/quiz"
+			},
+			"response": []
+		},
+		{
+			"name": "quizzes [T]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{teacherToken}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{baseURL}}/quizzes"
+			},
+			"response": []
+		},
+		{
+			"name": "quiz/:id - [T]",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{teacherToken}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{baseURL}}/quiz/{{quizID}}"
+			},
+			"response": []
+		}
+	]
+}
